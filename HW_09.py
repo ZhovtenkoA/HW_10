@@ -4,49 +4,40 @@ class AddresBook(UserDict):
     def __init__(self):
         super().__init__()
         
-    def add_record(self):
-        self.data[Name.name] = Phone.phone 
-        
-        
+    def add_record(self, record):
+        self.data[Record.name.value] = record 
+             
 class Field:
     pass
 
 class Name(Field):
-    name = ''
-    def __init__(self, name):
-        super().__init__()
-        self.name = name
+    def __init__(self, value):
+        self.value = value
 
 class Phone(Field):
-    phone = ''
     def __init__(self, phone):
-        super().__init__()
         self.phone = [phone]
 
 
-class Record(AddresBook):
-    def __init__(self, command):
-        super().__init__()
-        self.command = command
-        command_l = command.split()
-        self.name = command_l[1]
-        self.phone = command_l[2]
-        self.name = Name(self.name)
-        self.phone = Phone(self.phone)
-        
-        
+class Record:
+    def __init__(self, name, phone):
+        self.name = Name(name)
+        self.phone = Phone(phone)  
 
-    def add_phone(self):
+    #def add_phone(self):
         #self.data[self.name] = self.phone
-        PHONES[self.name] = self.phone
+        #PHONES[self.name] = self.phone
 
-    def change_phone(self):
-        PHONES[self.name] = self.phone
+    #def change_phone(self):
+        #PHONES[self.name] = self.phone
         #self.data[self.name] = self.phone
-    def delete_phone(self):
-        for phones in PHONES[self.name]:
-            if phones:
-                phones = 'empty'
+    #def delete_phone(self):
+        #for phones in PHONES[self.name]:
+            #if phones:
+                #phones = 'empty'
+
+
+
 
 
 
@@ -70,13 +61,15 @@ def main():
     while running:
         command = input('Enter a command:  ').lower()
         if command.startswith('add'):
-            record = Record(command)
-            record.add_record()
-            #add_phones(command)
+            command_l = command.split()
+            name = command_l[1]
+            phone = command_l[2]
+            record = Record(Name(name), Phone(phone))
         elif command.startswith('change'):
-            record = Record(command)
-            record.change_phone()
-             #change_phones(command)
+            command_l = command.split()
+            name = command_l[1]
+            phone = command_l[2]
+            record = Record(Name(name), Phone(phone))
         elif command.startswith('phone'):
             print_phones(command)
         elif command.startswith('del'):
