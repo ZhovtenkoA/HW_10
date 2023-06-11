@@ -1,11 +1,8 @@
 from collections import UserDict
 
-class AddresBook(UserDict):
-    def __init__(self):
-        super().__init__()
-        
+class AddressBook(UserDict):    
     def add_record(self, record):
-        self.data[Record.name.value] = record 
+        self.data[record.name.value] = record
              
 class Field:
     pass
@@ -16,30 +13,25 @@ class Name(Field):
 
 class Phone(Field):
     def __init__(self, phone):
-        self.phone = [phone]
+        self.phone = phone
 
 
 class Record:
     def __init__(self, name, phone):
         self.name = Name(name)
-        self.phone = Phone(phone)  
+        self.phone = Phone(phone)
 
-    #def add_phone(self):
-        #self.data[self.name] = self.phone
-        #PHONES[self.name] = self.phone
+    def show_phone(self):
+        if self.phone:
+            return self.phone.phone
+        else:
+            return "No phone number"
 
-    #def change_phone(self):
-        #PHONES[self.name] = self.phone
-        #self.data[self.name] = self.phone
-    #def delete_phone(self):
-        #for phones in PHONES[self.name]:
-            #if phones:
-                #phones = 'empty'
+    def change_phone(self, phone):
+        self.phone = Phone(phone)
 
-
-
-
-
+    def delete_phone(self):
+        self.phone = None
 
 
 def input_error(func):
@@ -60,21 +52,66 @@ def main():
     running = True
     while running:
         command = input('Enter a command:  ').lower()
-        if command.startswith('add'):
-            command_l = command.split()
-            name = command_l[1]
-            phone = command_l[2]
-            record = Record(Name(name), Phone(phone))
-        elif command.startswith('change'):
-            command_l = command.split()
-            name = command_l[1]
-            phone = command_l[2]
-            record = Record(Name(name), Phone(phone))
-        elif command.startswith('phone'):
-            print_phones(command)
-        elif command.startswith('del'):
-            record = Record(command)
-            record.delete_phone()
+        command_list = command.split()
+        if command_list[0] == 'add':
+            try:
+                name = command_list[1]
+                phone = command_list[2]
+                record = Record(name, phone)
+                PHONES.add_record(record)
+                print(f'add record for {name}')
+            except (IndexError, TypeError, ValueError) as e:
+                print(str(e))
+        elif command_list[0] == 'change':
+            try:
+                name = command_list[1]
+                phone = command_list[2]
+                record = PHONES.data.get(name)
+                if record:
+                    record.change_phone(phone)
+                    print(f"Changed phone number for {name}")
+                else:
+                    print(f"No record found for {name}")
+            except (IndexError, TypeError, ValueError) as e:
+                print(str(e))
+        elif command_list[0] =='phone':
+            try:
+                name = command_list[1]
+                record = PHONES.data.get(name)
+                if record:
+                    phone = record.show_phone()
+                    print(f"Phone number for {name}: {phone}")
+                else:
+                    print(f"No record found for {name}")
+            except (IndexError, TypeError, ValueError) as e:
+                print(str(e))
+        elif command_list[0] == 'del':
+            try:
+                name = command_list[1]
+                record = PHONES.data.get(name)
+                if record:
+                    record.delete_phone()
+                    print(f"Deleted phone for {name}")
+                else:
+                    print(f"No record found for {name}")
+            except (IndexError, TypeError, ValueError) as e:
+                print(str(e))
+        elif command_list[0] == 'show':
+            try:
+                if len(command_list) == 1:
+                    for name, record in sorted(PHONES.items()):
+                        phone = record.show_phone()
+                        print(f"{name}: {phone}")
+                elif len(command_list) == 2:
+                    letter = command_list[1]
+                    for name, record in sorted(PHONES.items()):
+                        if name.startswith(letter):
+                            phone = record.show_phone()
+                            print(f"{name}: {phone}")
+                else:
+                    raise ValueError('Invalid command')
+            except ValueError as e:
+                print(str(e))
         else:
             print(get_handler(command))
             if get_handler(command) == 'Good bye!':
@@ -95,21 +132,6 @@ def say_goodbye():
     output = 'Good bye!'
     return output
 
-
-#@input_error
-#def add_phones(command):
-    #global PHONES
-    #command_l = command.split()
-    #PHONES[command_l[1]] = command_l[2]
-    
-
-#@input_error
-#def change_phones(command):
-    #global PHONES
-    #command_c = command.split()
-    #PHONES[command_c[1]] = command_c[2]
-    
-
 @input_error
 def print_phones(command):
     command_g = command.split()
@@ -118,10 +140,14 @@ def print_phones(command):
 
 
 def all_phones():
-    return PHONES
+    all_records = ""
+    for name, record in PHONES.items():
+        phone = record.phone.phone
+        all_records += f"{name}: {phone}\n"
+    return all_records
 
 
-PHONES = AddresBook()
+PHONES = AddressBook()
 COMMANDS = {
     'hello': say_hello(),
     'good bye': say_goodbye(),
