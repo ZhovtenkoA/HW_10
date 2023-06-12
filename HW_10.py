@@ -1,29 +1,30 @@
 from collections import UserDict
 
-class AddressBook(UserDict):    
+class AddressBook(UserDict):
     def add_record(self, record):
         self.data[record.name.value] = record
              
 class Field:
-    pass
-
-class Name(Field):
     def __init__(self, value):
         self.value = value
 
+class Name(Field):
+    pass
+
 class Phone(Field):
-    def __init__(self, phone):
-        self.phone = phone
+    pass
 
 
 class Record:
-    def __init__(self, name, phone):
+    def __init__(self, name, phone=None):
         self.name = Name(name)
-        self.phone = Phone(phone)
+        if phone:
+            self.phones = []
+            self.phones.append(phone)
 
     def show_phone(self):
-        if self.phone:
-            return self.phone.phone
+        if self.phones:
+            return self.phones
         else:
             return "No phone number"
 
@@ -31,7 +32,7 @@ class Record:
         self.phone = Phone(phone)
 
     def delete_phone(self):
-        self.phone = None
+        self.phones = None
 
 
 def input_error(func):
@@ -97,6 +98,28 @@ def main():
             except (IndexError, TypeError, ValueError) as e:
                 print(str(e))
         elif command_list[0] == 'show':
+            try:
+                if len(command_list) == 1:
+                    if len(PHONES) == 0:
+                        print("Phonebook is empty")
+                    else:
+                        for name, record in sorted(PHONES.items()):
+                            phone = record.show_phone()
+                            print(f"{name}: {phone}")
+                elif len(command_list) == 2:
+                    letter = command_list[1]
+                    found = False
+                    for name, record in sorted(PHONES.items()):
+                        if name.startswith(letter):
+                            phone = record.show_phone()
+                            print(f"{name}: {phone}")
+                            found = True
+                    if not found:
+                        print(f"No records found for '{letter}'")
+                else:
+                    raise ValueError('Invalid command')
+            except ValueError as e:
+                print(str(e))
             try:
                 if len(command_list) == 1:
                     for name, record in sorted(PHONES.items()):
