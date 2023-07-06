@@ -263,10 +263,10 @@ def main():
             continue
         elif action == 'save':
             file_name = input("File name: ")
-            return PHONES.save(file_name)
+            PHONES.save(file_name)
         elif action == 'load':
             file_name = input("File name: ")
-            return PHONES.load(file_name)
+            PHONES.load(file_name)
         if command == 'search':
             pattern = input("Search pattern: ")
             results = PHONES.search(pattern)
